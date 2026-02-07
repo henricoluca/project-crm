@@ -6,6 +6,7 @@ export class LoginUserDto {
     @IsEmail()
     readonly email!: string;
 
+    @ApiProperty()
     @IsNotEmpty()
     readonly password!: string;
 }
@@ -32,4 +33,10 @@ export class UpdatePasswordDto {
     @IsNotEmpty()
     @ApiProperty() oldPassword!: string;
 
+}
+
+export class UserResponseDto {
+    id!: number;
+    name!: string;
+    email!: string;
 }
