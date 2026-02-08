@@ -11,7 +11,7 @@ async function bootstrap() {
     .setTitle('CRM API')
     .setDescription('API para gestao de clientes')
     .setVersion('1.0')
-    .addBearerAuth()
+    .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' }, 'access-token')
     .addTag('clients')
     .build();
 

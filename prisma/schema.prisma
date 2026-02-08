@@ -21,3 +21,29 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 }
+
+enum CompanyStatus {
+  ATIVA
+  INATIVA
+}
+
+enum InactivationReason {
+  INADIMPLENCIA
+  PEDIDO_CLIENTE
+  FALENCIA
+  OUTRO
+}
+
+model Company {
+  id                  Int                  @id @default(autoincrement())
+  corporateName       String
+  address             String
+  phone               String
+  cnpj                String               @unique
+  tags                String[]             @default([])
+  status              CompanyStatus        @default(ATIVA)
+  inactivationReasons InactivationReason[] @default([])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

@@ -36,7 +36,10 @@ export class UpdatePasswordDto {
 }
 
 export class UserResponseDto {
+    @ApiProperty()
     id!: number;
+    @ApiProperty()
     name!: string;
+    @ApiProperty()
     email!: string;
 }
