@@ -1,7 +1,16 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { ApiBearerAuth, ApiOkResponse } from '@nestjs/swagger';
-import { CompanyResponseDto, CreateCompanyDto } from './companies.dto';
+import { ApiBearerAuth, ApiOkResponse, ApiProperty } from '@nestjs/swagger';
+import { CompanyResponseDto, CreateCompanyDto, UpdateCompanyDto } from './companies.dto';
 import { CompaniesService } from './companies.service';
 
 @UseGuards(JwtAuthGuard)
@@ -9,25 +18,30 @@ import { CompaniesService } from './companies.service';
 @ApiBearerAuth('access-token')
 @Controller('companies')
 export class CompaniesController {
-    constructor(private readonly userService: CompaniesService) { }
+  constructor(private readonly userService: CompaniesService) {}
 
-    @Get()
-    async findAll(): Promise<CompanyResponseDto[]> {
-        return this.userService.findAll();
-    }
+  @Get()
+  async findAll(): Promise<CompanyResponseDto[]> {
+    return this.userService.findAll();
+  }
 
-    @Get(':id')
-    async findOne(@Param('id', ParseIntPipe) id: number): Promise<CompanyResponseDto | null> {
-        return this.userService.findById(id);
-    }
+  @Get(':id')
+  async findOne(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<CompanyResponseDto | null> {
+    return this.userService.findById(id);
+  }
 
-    @Post()
-    async create(@Body() dto: CreateCompanyDto): Promise<CompanyResponseDto> {
-        return this.userService.create(dto)
-    }
+  @Post()
+  async create(@Body() dto: CreateCompanyDto): Promise<CompanyResponseDto> {
+    return this.userService.create(dto);
+  }
 
-    @Put(':id')
-    async update(@Param('id', ParseIntPipe) id: number, @Body() dto: CreateCompanyDto): Promise<CompanyResponseDto> {
-        return this.userService.update(id, dto)
-    }
+  @Put(':id')
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateCompanyDto,
+  ): Promise<CompanyResponseDto> {
+    return this.userService.update(id, dto);
+  }
 }

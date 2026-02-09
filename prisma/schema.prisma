@@ -13,10 +13,11 @@ datasource db {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  email    String @unique
-  name     String
-  password String
+  id             Int      @id @default(autoincrement())
+  email          String   @unique
+  name           String
+  password       String
+  recordsCreated Record[] @relation("RecordCreatedBy")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
@@ -43,7 +44,35 @@ model Company {
   tags                String[]             @default([])
   status              CompanyStatus        @default(ATIVA)
   inactivationReasons InactivationReason[] @default([])
+  records             Record[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+enum RecordType {
+  APRESENTACAO
+  ORCAMENTO
+  NOTA_FISCAL
+  OUTRO
+}
+
+model Record {
+  id                  Int        @id @default(autoincrement())
+  sentDate            DateTime
+  lectureConfirmation Boolean    @default(false)
+  type                RecordType
+  observation         String?
+
+  company   Company? @relation(fields: [companyId], references: [id])
+  companyId Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  createdById Int?
+  createdBy   User? @relation("RecordCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([companyId])
+  @@index([createdById])
 }

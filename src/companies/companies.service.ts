@@ -1,39 +1,70 @@
-import { Injectable } from "@nestjs/common";
-import { PrismaService } from "prisma/prisma.service";
-import { CompanyResponseDto, CreateCompanyDto } from "./companies.dto";
-import { Prisma } from "@prisma/client";
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from 'prisma/prisma.service';
+import { CompanyResponseDto, CreateCompanyDto, UpdateCompanyDto } from './companies.dto';
+import { CompanyStatus } from '@prisma/client';
 
 @Injectable()
 export class CompaniesService {
-    constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
-    async findAll(): Promise<CompanyResponseDto[]> {
-        return await this.prisma.company.findMany({ select: { corporateName: true, cnpj: true, status: true } })
+  private async findCompanyOrThrow(id: number) {
+    const company = await this.prisma.company.findUnique({
+      where: { id: Number(id) },
+      select: { id: true, status: true },
+    });
+
+    if (!company) {
+      throw new NotFoundException('Empresa não encontrada.');
     }
 
-    async findById(id: number): Promise<CompanyResponseDto | null> {
-        return await this.prisma.company.findUnique({ where: { id: Number(id) }, select: { corporateName: true, cnpj: true, status: true } });
+    return company;
+  }
+
+  async findAll(): Promise<CompanyResponseDto[]> {
+    return await this.prisma.company.findMany({
+      select: { corporateName: true, cnpj: true, status: true, address: true, phone: true },
+    });
+  }
+
+  async findById(id: number): Promise<CompanyResponseDto | null> {
+    return await this.prisma.company.findUnique({
+      where: { id: Number(id) },
+      select: { corporateName: true, cnpj: true, status: true, address: true, phone: true },
+    });
+  }
+
+  async findByCnpj(cnpj: string) {
+    return await this.prisma.company.findUnique({ where: { cnpj } });
+  }
+
+  async create(dto: CreateCompanyDto): Promise<CompanyResponseDto> {
+    return await this.prisma.company.create({
+      data: dto,
+      select: { corporateName: true, cnpj: true, status: true, address: true, phone: true },
+    });
+  }
+
+  async update(id: number, dto: UpdateCompanyDto): Promise<CompanyResponseDto> {
+    const company = await this.findCompanyOrThrow(id);
+    const isReactivation =
+      company.status === CompanyStatus.INATIVA &&
+      dto.status === CompanyStatus.ATIVA;
+
+    if (company.status === CompanyStatus.INATIVA && !isReactivation) {
+      throw new ForbiddenException('Empresa inativa não pode receber registros. Apenas visualização.');
     }
 
-    async findByCnpj(cnpj: string) {
-        return await this.prisma.company.findUnique({ where: { cnpj } })
-    }
-
-    async create(dto: CreateCompanyDto): Promise<CompanyResponseDto> {
-        return await this.prisma.company.create({ data: dto, select: { corporateName: true, cnpj: true, status: true } })
-    }
-
-    async update(id: number, dto: CreateCompanyDto): Promise<CompanyResponseDto> {
-        return await this.prisma.company.update({
-            where: { id: Number(id) },
-            data: {
-                corporateName: dto.corporateName,
-                phone: dto.phone,
-                status: dto.status,
-                tags: dto.tags
-            },
-            select: { corporateName: true, cnpj: true, status: true }
-        });
-    }
-
+    return await this.prisma.company.update({
+      where: { id: Number(id) },
+      data: {
+        corporateName: dto.corporateName,
+        address: dto.address,
+        phone: dto.phone,
+        status: dto.status,
+        tags: dto.tags,
+        inactivationReasons: dto.inactivationReasons,
+      },
+      select: { corporateName: true, cnpj: true, status: true, address: true, phone: true},
+    });
+  }
 }
