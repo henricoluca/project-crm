@@ -45,9 +45,30 @@ model Company {
   status              CompanyStatus        @default(ATIVA)
   inactivationReasons InactivationReason[] @default([])
   records             Record[]
+  contacts            Contact[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+enum ContactStatus {
+  ATIVO
+  INATIVO
+}
+
+model Contact {
+  id        Int           @id @default(autoincrement())
+  name      String
+  celular   String
+  email     String        @unique
+  status    ContactStatus @default(ATIVO)
+  companyId Int
+  company   Company       @relation(fields: [companyId], references: [id])
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([companyId])
+  @@index([status])
 }
 
 enum RecordType {

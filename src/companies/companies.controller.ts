@@ -10,7 +10,11 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { ApiBearerAuth, ApiOkResponse, ApiProperty } from '@nestjs/swagger';
-import { CompanyResponseDto, CreateCompanyDto, UpdateCompanyDto } from './companies.dto';
+import {
+  CompanyResponseDto,
+  CreateCompanyDto,
+  UpdateCompanyDto,
+} from './companies.dto';
 import { CompaniesService } from './companies.service';
 
 @UseGuards(JwtAuthGuard)

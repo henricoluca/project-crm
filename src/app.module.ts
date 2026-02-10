@@ -6,10 +6,20 @@ import { UsersModule } from './users/users.module';
 import { PrismaModule } from 'prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
 import { CompaniesModule } from './companies/companies.module';
+import { RecordsModule } from './records/records.module';
+import { ContactsModule } from './contacts/contacts.module';
 
 @Module({
-  imports: [AuthModule, UsersModule, PrismaModule, ConfigModule.forRoot({ isGlobal: true }), CompaniesModule],
+  imports: [
+    AuthModule,
+    UsersModule,
+    PrismaModule,
+    ConfigModule.forRoot({ isGlobal: true }),
+    CompaniesModule,
+    RecordsModule,
+    ContactsModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

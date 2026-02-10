@@ -1,27 +1,55 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty } from "class-validator";
+import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
+import { RecordType } from '@prisma/client';
+import {
+  IsBoolean,
+  IsDateString,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+} from 'class-validator';
 
+export class CreateRecordDto {
+  @ApiProperty()
+  @IsDateString()
+  sentDate!: string;
 
-export class CreateRecordDto{
-    @ApiProperty()
-    @IsNotEmpty()
-    sentDate!: Date
+  @ApiProperty({ enum: RecordType, enumName: 'RecordType' })
+  @IsEnum(RecordType)
+  type!: RecordType;
 
-    @ApiProperty()
-    @IsNotEmpty()
-    type!: string
+  @ApiPropertyOptional()
+  @IsOptional()
+  observation?: string;
 
-    @ApiProperty()
-    @IsNotEmpty()
-    observation!: string
-
-    @ApiProperty()
-    @IsNotEmpty()
-    lectureConfirmation!: string
-
-    @ApiProperty()
-    @IsNotEmpty()
-    companyId!: number
-
+  @ApiProperty()
+  @IsBoolean()
+  lectureConfirmation!: boolean;
 }
 
+export class UpdateRecordDto extends PartialType(CreateRecordDto) {}
+
+export class RecordsResponseDto {
+  @ApiProperty()
+  id!: number;
+
+  @ApiProperty()
+  sentDate!: Date;
+
+  @ApiProperty({ enum: RecordType, enumName: 'RecordType' })
+  type!: RecordType;
+
+  @ApiProperty()
+  lectureConfirmation!: boolean;
+
+  @ApiPropertyOptional()
+  observation?: string | null;
+
+  @ApiPropertyOptional()
+  companyId?: number | null;
+
+  @ApiProperty()
+  createdAt!: Date;
+
+  @ApiProperty()
+  updatedAt!: Date;
+}
