@@ -22,14 +22,14 @@ export class CompaniesService {
 
   async findAll(): Promise<CompanyResponseDto[]> {
     return await this.prisma.company.findMany({
-      select: { corporateName: true, cnpj: true, status: true, address: true, phone: true },
+      select: { id: true, corporateName: true, cnpj: true, status: true, address: true, phone: true },
     });
   }
 
   async findById(id: number): Promise<CompanyResponseDto | null> {
     return await this.prisma.company.findUnique({
       where: { id: Number(id) },
-      select: { corporateName: true, cnpj: true, status: true, address: true, phone: true },
+      select: { id: true, corporateName: true, cnpj: true, status: true, address: true, phone: true },
     });
   }
 
@@ -39,8 +39,16 @@ export class CompaniesService {
 
   async create(dto: CreateCompanyDto): Promise<CompanyResponseDto> {
     return await this.prisma.company.create({
-      data: dto,
-      select: { corporateName: true, cnpj: true, status: true, address: true, phone: true },
+      data: {
+        corporateName: dto.corporateName,
+        address: dto.address,
+        phone: dto.phone,
+        cnpj: dto.cnpj,
+        status: dto.status,
+        tags: dto.tags ?? [],
+        inactivationReasons: dto.inactivationReasons ?? [],
+      },
+      select: { id: true, corporateName: true, cnpj: true, status: true, address: true, phone: true },
     });
   }
 
@@ -64,7 +72,7 @@ export class CompaniesService {
         tags: dto.tags,
         inactivationReasons: dto.inactivationReasons,
       },
-      select: { corporateName: true, cnpj: true, status: true, address: true, phone: true},
+      select: { id: true, corporateName: true, cnpj: true, status: true, address: true, phone: true},
     });
   }
 }

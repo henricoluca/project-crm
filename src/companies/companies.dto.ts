@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
-import { ArrayUnique, IsArray, IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { ArrayUnique, IsArray, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { CompanyStatus, InactivationReason } from '@prisma/client'
 
 export class CreateCompanyDto {
@@ -19,24 +19,29 @@ export class CreateCompanyDto {
   @IsNotEmpty()
   cnpj!: string;
 
-  @ApiProperty({ type: [String], default: [] })
+  @ApiPropertyOptional({ type: [String], default: [] })
+  @IsOptional()
   @IsArray()
   @IsString({ each: true })
   @ArrayUnique()
-  tags!: string[];
+  tags?: string[];
 
   @ApiProperty({ enum: CompanyStatus, enumName: 'CompanyStatus' })
   @IsEnum(CompanyStatus)
   status!: CompanyStatus;
 
-  @ApiProperty({ enum: InactivationReason, isArray: true, enumName: 'InactivationReason', default: [] })
+  @ApiPropertyOptional({ enum: InactivationReason, isArray: true, enumName: 'InactivationReason', default: [] })
+  @IsOptional()
   @IsArray()
   @IsEnum(InactivationReason, { each: true })
-  inactivationReasons!: InactivationReason[];
+  inactivationReasons?: InactivationReason[];
 }
 
 
 export class CompanyResponseDto {
+  @ApiProperty()
+  id!: number;
+
   @ApiProperty()
   @IsNotEmpty()
   corporateName!: string;
